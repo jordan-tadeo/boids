@@ -3,19 +3,19 @@ import pygame
 import boid as b
 import math
 
-
+W, H = 640, 480
 
 # Define the background colour
 # using RGB color coding.
 background_color = (10, 40, 20)
 boid_color = (255, 255, 255)
 
-# Define boid size
+# get boid size from boid class file
 boid_size = b.boid_size
   
 # Define the dimensions of
 # screen object(width,height)
-screen = pygame.display.set_mode((640, 480))
+screen = pygame.display.set_mode((W, H))
 pygame.display.set_caption('Flocker 0.0.1')
 
 # Initialize a pygame clock  
@@ -30,6 +30,18 @@ def create_boid_list(n: int) -> list[b.Boid]:
     
     return boid_list
 
+def infinite_edges(boid_list: list[b.Boid]) -> list[b.Boid]:
+    for boid in boid_list:
+        if boid.pos[0] > W:
+            boid.pos[0] = 0
+        elif boid.pos[0] < 0:
+            boid.pos[0] = W
+        if boid.pos[1] > H:
+            boid.pos[1] = 0
+        elif boid.pos[1] < 0:
+            boid.pos[1] = H
+    return boid_list
+
 def update_all_boid_positions(boid_list: list[b.Boid]) -> list[b.Boid]:
     for boid in boid_list:
         r = math.radians(boid.hdg)
@@ -37,11 +49,13 @@ def update_all_boid_positions(boid_list: list[b.Boid]) -> list[b.Boid]:
 
         boid.pos[0] += boid.vel[0]
         boid.pos[1] += boid.vel[1]
-        boid.hdg += 1
+        boid.hdg += .1
+
+        
 
         print(f"vel = [{boid.vel}]")
 
-    return boid_list
+    return infinite_edges(boid_list)
 
 def draw_all_boids(boid_list: list[b.Boid]) -> None:
     for boid in boid_list:
