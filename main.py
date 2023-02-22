@@ -1,7 +1,10 @@
 # import the pygame module
 import pygame
 import boid as b
-  
+import math
+
+
+
 # Define the background colour
 # using RGB color coding.
 background_color = (10, 40, 20)
@@ -29,9 +32,14 @@ def create_boid_list(n: int) -> list[b.Boid]:
 
 def update_all_boid_positions(boid_list: list[b.Boid]) -> list[b.Boid]:
     for boid in boid_list:
+        r = math.radians(boid.hdg)
+        boid.vel = [-math.sin(r) * boid.max_speed, -math.cos(r) * boid.max_speed]
+
         boid.pos[0] += boid.vel[0]
         boid.pos[1] += boid.vel[1]
-        boid.hdg += 2
+        boid.hdg += 1
+
+        print(f"vel = [{boid.vel}]")
 
     return boid_list
 
