@@ -2,8 +2,9 @@
 import pygame
 import boid as b
 import math
+import random
 
-W, H = 640, 480
+W, H = 1280, 720
 
 # Define the background colour
 # using RGB color coding.
@@ -12,11 +13,14 @@ boid_color = (255, 255, 255)
 
 # get boid size from boid class file
 boid_size = b.boid_size
-  
+
+# Program version number
+ver = '0.0.8'
+
 # Define the dimensions of
 # screen object(width,height)
 screen = pygame.display.set_mode((W, H))
-pygame.display.set_caption('Flocker 0.0.1')
+pygame.display.set_caption(f'Flocker {ver}')
 
 # Initialize a pygame clock  
 clock = pygame.time.Clock()
@@ -44,16 +48,9 @@ def infinite_edges(boid_list: list[b.Boid]) -> list[b.Boid]:
 
 def update_all_boid_positions(boid_list: list[b.Boid]) -> list[b.Boid]:
     for boid in boid_list:
-        r = math.radians(boid.hdg)
-        boid.vel = [-math.sin(r) * boid.max_speed, -math.cos(r) * boid.max_speed]
-
-        boid.pos[0] += boid.vel[0]
-        boid.pos[1] += boid.vel[1]
-        boid.hdg += .1
-
-        
-
-        print(f"vel = [{boid.vel}]")
+        # Update boid position
+        boid.update()
+        boid.three_rules(boid_list)
 
     return infinite_edges(boid_list)
 
@@ -61,23 +58,22 @@ def draw_all_boids(boid_list: list[b.Boid]) -> None:
     for boid in boid_list:
         x = boid.pos[0]
         y = boid.pos[1]
+        color = boid.color
         surf = boid.surf
         hdg = boid.hdg
 
-        surf_rect = surf.get_rect()
-        surf_rect.center = (x, y)
-        
-        surf.set_colorkey((0,0,0))
-        surf.fill((0,0,0))
+        # Create surface with alpha channel and fill with transparent color
+        surf_alpha = surf.convert_alpha()
+        surf_alpha.fill((0, 0, 0, 0))
 
-        pygame.draw.polygon(surf, boid_color,
-        [(boid_size[0]/2, 0), (0, boid_size[1]), (boid_size[0], boid_size[1])])
+        # Draw triangle on surface
+        pygame.draw.polygon(surf_alpha, color, [(boid_size[0] / 2, 0), (0, boid_size[1]), (boid_size[0], boid_size[1])])
 
-        rotated_surf = pygame.transform.rotate(surf, hdg)
-        rotated_rect = rotated_surf.get_rect(center=surf_rect.center)
-        screen.blit(rotated_surf, rotated_rect)
+        # Rotate surface by heading angle and blit onto screen
+        rotated_surf = pygame.transform.rotate(surf_alpha, hdg)
+        screen.blit(rotated_surf, rotated_surf.get_rect(center=(x, y)))
 
-boid_list = create_boid_list(1)
+boid_list = create_boid_list(256)
 
 # Variable to keep our game loop running
 running = True
