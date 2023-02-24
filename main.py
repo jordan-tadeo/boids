@@ -1,21 +1,22 @@
 # import the pygame module
 import pygame
 import boid as b
-import math
-import random
+import numpy as np
 
 W, H = 1280, 720
 
 # Define the background colour
 # using RGB color coding.
-background_color = (10, 40, 20)
+background_color = (12, 24, 27)
 boid_color = (255, 255, 255)
+
+margin = [128, 128]
 
 # get boid size from boid class file
 boid_size = b.boid_size
 
 # Program version number
-ver = '0.0.8'
+ver = '0.0.9'
 
 # Define the dimensions of
 # screen object(width,height)
@@ -73,7 +74,7 @@ def draw_all_boids(boid_list: list[b.Boid]) -> None:
         rotated_surf = pygame.transform.rotate(surf_alpha, hdg)
         screen.blit(rotated_surf, rotated_surf.get_rect(center=(x, y)))
 
-boid_list = create_boid_list(256)
+boid_list = create_boid_list(128)
 
 # Variable to keep our game loop running
 running = True
@@ -97,3 +98,11 @@ while running:
     
     # Update the display using update
     pygame.display.update()
+
+# TEST STUFF
+array_1 = [10, 20, 30]
+array_2 = [1, 2, 3]
+
+array_3 = np.add(array_1, array_2)
+
+print(f"array_3: {array_3}")
