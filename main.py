@@ -1,90 +1,26 @@
 # import the pygame module
 import pygame
-import boid as b
-import numpy as np
-
-W, H = 1280, 720
-
-# Define the background colour
-# using RGB color coding.
-background_color = (12, 24, 27)
-boid_color = (255, 255, 255)
-
-margin = [128, 128]
-
-# get boid size from boid class file
-boid_size = b.boid_size
-
-# Program version number
-ver = '0.0.9'
-
-# Define the dimensions of
-# screen object(width,height)
-screen = pygame.display.set_mode((W, H))
-pygame.display.set_caption(f'Flocker {ver}')
+import window as win
+import world
 
 # Initialize a pygame clock  
 clock = pygame.time.Clock()
 
-# ------- FUNCTIONS ----------
+window1 = win.Window()
 
-def create_boid_list(n: int) -> list[b.Boid]:
-    boid_list = []
-    for i in range(n):
-        boid_list.append(b.Boid())
-    
-    return boid_list
+world1 = world.World(window1)
 
-def infinite_edges(boid_list: list[b.Boid]) -> list[b.Boid]:
-    for boid in boid_list:
-        if boid.pos[0] > W:
-            boid.pos[0] = 0
-        elif boid.pos[0] < 0:
-            boid.pos[0] = W
-        if boid.pos[1] > H:
-            boid.pos[1] = 0
-        elif boid.pos[1] < 0:
-            boid.pos[1] = H
-    return boid_list
-
-def update_all_boid_positions(boid_list: list[b.Boid]) -> list[b.Boid]:
-    for boid in boid_list:
-        # Update boid position
-        boid.update()
-        boid.three_rules(boid_list)
-
-    return infinite_edges(boid_list)
-
-def draw_all_boids(boid_list: list[b.Boid]) -> None:
-    for boid in boid_list:
-        x = boid.pos[0]
-        y = boid.pos[1]
-        color = boid.color
-        surf = boid.surf
-        hdg = boid.hdg
-
-        # Create surface with alpha channel and fill with transparent color
-        surf_alpha = surf.convert_alpha()
-        surf_alpha.fill((0, 0, 0, 0))
-
-        # Draw triangle on surface
-        pygame.draw.polygon(surf_alpha, color, [(boid_size[0] / 2, 0), (0, boid_size[1]), (boid_size[0], boid_size[1])])
-
-        # Rotate surface by heading angle and blit onto screen
-        rotated_surf = pygame.transform.rotate(surf_alpha, hdg)
-        screen.blit(rotated_surf, rotated_surf.get_rect(center=(x, y)))
-
-boid_list = create_boid_list(128)
+boid_list = world1.create_boid_list(128)
 
 # Variable to keep our game loop running
 running = True
 
 # game loop
 while running:
-    screen.fill(background_color)
+    window1.fill_screen((0,0,0))
     
-    draw_all_boids(boid_list)
-    boid_list = update_all_boid_positions(boid_list)
+    world1.draw_all_boids(boid_list)
+    boid_list = world1.update_all_boid_positions(boid_list)
 
 # for loop through the event queue  
     for event in pygame.event.get():
@@ -97,12 +33,5 @@ while running:
     clock.tick(60)
     
     # Update the display using update
-    pygame.display.update()
-
-# TEST STUFF
-array_1 = [10, 20, 30]
-array_2 = [1, 2, 3]
-
-array_3 = np.add(array_1, array_2)
-
-print(f"array_3: {array_3}")
+    # pygame.display.update()
+    window1.update()

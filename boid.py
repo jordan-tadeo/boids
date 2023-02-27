@@ -6,7 +6,7 @@ import numpy as np
 W, H = (1280, 720)
 
 boid_size = (4, 6)
-max_speed = .8
+max_speed = .33
 neighbor_range = 512 # pixels
 separation_range = boid_size[0] + 0 # pixels
 
@@ -52,7 +52,7 @@ class Boid:
 
         ratio = x / y
 
-        
+
 
     def apply_force_from_point(self, point, mag):
 
