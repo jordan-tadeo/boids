@@ -2,7 +2,7 @@
 import pygame as pg
 
 W, H = 1280, 720
-ver = "0.0.9"
+ver = "0.0.12"
 title = f"Flocker {ver}"
 
 bg_color = (60, 60, 90)

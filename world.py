@@ -18,14 +18,14 @@ class World:
 
     def infinite_edges(self, boid_list: list) -> list:
         for boid in boid_list:
-            if boid.pos[0] > self.W:
-                boid.pos[0] = 0
-            elif boid.pos[0] < 0:
-                boid.pos[0] = self.W
-            if boid.pos[1] > self.H:
-                boid.pos[1] = 0
-            elif boid.pos[1] < 0:
-                boid.pos[1] = self.H
+            if boid.pos.x > self.W:
+                boid.pos.x = 0
+            elif boid.pos.x < 0:
+                boid.pos.x = self.W
+            if boid.pos.y > self.H:
+                boid.pos.y = 0
+            elif boid.pos.y < 0:
+                boid.pos.y = self.H
         return boid_list
 
     def update_all_boid_positions(self, boid_list: list) -> list:
@@ -38,8 +38,8 @@ class World:
 
     def draw_all_boids(self, boid_list: list) -> None:
         for boid in boid_list:
-            x = boid.pos[0]
-            y = boid.pos[1]
+            x = boid.pos.x
+            y = boid.pos.y
             color = boid.color
             surf = boid.surf
             hdg = boid.hdg
@@ -49,7 +49,7 @@ class World:
             surf_alpha.fill((0, 0, 0, 0))
 
             # Draw triangle on surface
-            pg.draw.polygon(surf_alpha, color, [(boid_size[0] / 2, 0), (0, boid_size[1]), (boid_size[0], boid_size[1])])
+            pg.draw.polygon(surf_alpha, color, [(boid_size.x / 2, 0), (0, boid_size.y), (boid_size.x, boid_size.y)])
 
             # Rotate surface by heading angle and blit onto screen
             rotated_surf = pg.transform.rotate(surf_alpha, hdg)
