@@ -1,19 +1,20 @@
 import pygame
 import math
 import random
-import numpy as np
 import utility as util
 
-W, H = (1280, 720)
+W, H = (640, 480)
 
 boid_size = util.Vector2(4, 6)
-max_speed = 5
-max_accel = 2
-neighbor_range = 512 # pixels
-separation_range = boid_size.x + 0 # pixels
+max_speed = 3
+max_accel = 1
+neighbor_range = 128 # pixels
+separation_range = boid_size.x + 8 # pixels
 
 neutral_color = (255, 255, 255)
 neighbors_color = (255, 0, 0)
+
+empty_vector = util.Vector2(0, 0)
 
 class Boid:
     def __init__(self):
@@ -21,7 +22,7 @@ class Boid:
 
         self.hdg = 0
         self.pos = util.Vector2(random.random()* W, random.random() * H)
-        self.vel = util.Vector2((random.random() - 0.4) * max_speed, -1  * max_speed)
+        self.vel = util.Vector2((random.random() - 0.5) * max_speed,(random.random() - 0.5) * max_speed)
 
         self.surf = pygame.Surface((boid_size.x*math.sqrt(2), boid_size.y*math.sqrt(2)))
         self.color = neutral_color
@@ -44,6 +45,15 @@ class Boid:
         if speed > self.max_speed:
             self.vel.x *= self.max_speed / speed
             self.vel.y *= self.max_speed / speed
+    
+    def get_vector_toward(self, pos: util.Vector2):
+        dist = math.dist(self.pos, pos)
+        x = pos.getX() - self.pos.getX()
+        y = pos.getY() - self.pos.getY()
+
+        scale = max_accel / dist if dist > 0 else max_accel
+
+        return util.Vector2(scale * x, scale * y)
 
     def move_toward(self, pos: util.Vector2):
         dist = math.dist(self.pos, pos)
@@ -53,6 +63,15 @@ class Boid:
         scale = max_accel / dist if dist > 0 else max_accel
 
         self.vel += util.Vector2(scale * x, scale * y)
+    
+    def get_vector_from(self, pos: util.Vector2):
+        dist = math.dist(self.pos, pos)
+        x = pos.getX() - self.pos.getX()
+        y = pos.getY() - self.pos.getY()
+
+        scale = max_accel / dist if dist > 0 else max_accel
+
+        return util.Vector2(-scale * x, -scale * y)
 
     def move_away_from(self, pos: util.Vector2):
         dist = math.dist(self.pos, pos)
@@ -76,28 +95,20 @@ class Boid:
         
         return neighbors
 
-    def separation(self):
+    def separation(self) -> util.Vector2:
         for b in self.neighbors:
             if b[0] is self:
                 continue
             # if dist is less than separation range
             elif b[1] < separation_range:
-                self.move_away_from(b[0].pos)
+                return self.get_vector_from(b[0].pos) * 0.33
+            
+        return empty_vector
     
-    def alignment(self):
-
-
-
-        """Basically useless right now. Need to implement a version of alignment that
-        works on ratios of velocity components instead of angles"""
-
-
-
-
-
+    def alignment(self) -> util.Vector2:
         # if this boid has no neighbors, don't bother
         if len(self.neighbors) == 0:
-            return
+            return empty_vector
 
         # average the velocity components of neighbors
         avg_vel = util.Vector2(0, 0)
@@ -110,23 +121,24 @@ class Boid:
 
         # distance formula to get the average speed of neighbors
         avg_vel_mag = math.sqrt(avg_vel.x**2 + avg_vel.y**2)
-        max_alignment_vel = .05
+        max_alignment_mag = .1
 
         # avoid dividing by 0
         if avg_vel_mag == 0:
-            return
+            return empty_vector
 
-        alignment_vel = util.Vector2(0, 0)
-        alignment_vel.x = (avg_vel.x / avg_vel_mag) * max_alignment_vel
-        alignment_vel.y = (avg_vel.y / avg_vel_mag) * max_alignment_vel
+        alignment_vector = util.Vector2(0, 0)
+        alignment_vector.x = (avg_vel.x / avg_vel_mag) * max_alignment_mag
+        alignment_vector.y = (avg_vel.y / avg_vel_mag) * max_alignment_mag
 
-        # self.apply_force_from_point(alignment_vel, max_alignment_vel)
-        self.accelerate(util.Vector2(alignment_vel.x, alignment_vel.y))
+        # apply the new acceleration vector to this boid's velocity
+        # print(alignment_vector.x, " ", alignment_vector.y)
+        return alignment_vector
     
-    def cohesion(self):
+    def cohesion(self) -> util.Vector2:
         # If this boid has no neighbors, fuggetaboutit
         if len(self.neighbors) == 0:
-            return
+            return empty_vector
 
         # Get the average position of neighbors
         avg_pos = util.Vector2(0, 0)
@@ -136,16 +148,19 @@ class Boid:
         avg_pos.x /= len(self.neighbors)
         avg_pos.y /= len(self.neighbors)
 
-        self.move_toward(avg_pos)
+        final = self.get_vector_toward(avg_pos) * 0.1
 
-
+        return final
     
     def three_rules(self, boid_list):
-
         self.neighbors = self.get_neighbors(boid_list)
 
-        self.separation()
-        self.alignment()
-        self.cohesion()
+        separation_vector = self.separation()
+        alignment_vector = self.alignment()
+        cohesion_vector = self.cohesion()
 
-    
+        # print(f"{self}, sepvec: {separation_vector}, align: {alignment_vector}, cohesion: {cohesion_vector}")
+
+        # Combine all three vectors to produce a total acceleration vector
+        accel_vector = separation_vector + alignment_vector + cohesion_vector
+        self.accelerate(accel_vector)

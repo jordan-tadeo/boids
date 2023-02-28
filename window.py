@@ -1,11 +1,11 @@
 
 import pygame as pg
 
-W, H = 1280, 720
+W, H = 640, 480
 ver = "0.0.12"
 title = f"Flocker {ver}"
 
-bg_color = (60, 60, 90)
+bg_color = (20, 20, 30)
 
 class Window:
     def __init__(self, width=W, height=H, title=title):

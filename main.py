@@ -1,4 +1,3 @@
-# import the pygame module
 import pygame
 import window
 import world
@@ -17,6 +16,7 @@ while running:
     window1.fill_screen()
     
     world1.draw_all_boids(boid_list)
+
     boid_list = world1.update_all_boid_positions(boid_list)
 
     # Update the display
@@ -24,8 +24,7 @@ while running:
 
     # loop through the event queue  
     for event in pygame.event.get():
-
-        # Check for QUIT event      
+        # Check for QUIT event    
         if event.type == pygame.QUIT:
             running = False
     

@@ -10,10 +10,17 @@ class Vector2:
         yield self.y
     
     def __add__(self, v2):
-        return Vector2(self.x + v2.x, self.y + v2.y)
-
+        if isinstance(v2, Vector2):
+            return Vector2(self.x + v2.x, self.y + v2.y)
+        
     def __sub__(self, v2):
-        return Vector2(self.x - v2.x, self.y - v2.y)
+        if isinstance(v2, Vector2):
+            return Vector2(self.x - v2.x, self.y - v2.y)
+    
+    def __mul__(self, scalar):
+        self.x *= scalar
+        self.y *= scalar
+        return self
     
     def setX(self, x:float):
         self.x = x
