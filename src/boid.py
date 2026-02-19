@@ -3,17 +3,16 @@ import math
 import random
 import src.utility as util
 
-W, H = (720, 640)
+W, H = (640, 480)
 
 boid_size = util.Vector2(4, 6)
-max_speed = 2.2
-max_accel = 0.3
+max_speed = 2.5
+max_accel = 0.6
 neighbor_range = 128 # pixels
 separation_range = boid_size.x + 8 # pixels
 
 neutral_color = (255, 255, 255)
 neighbors_color = (255, 0, 0)
-solo_color = (0, 200, 255)
 
 empty_vector = util.Vector2(0, 0)
 
@@ -35,15 +34,8 @@ class Boid:
         self.pos.x += self.vel.x
         self.pos.y += self.vel.y
 
-        # only update heading if we're actually moving
-        speed2 = self.vel.x * self.vel.x + self.vel.y * self.vel.y
-        if speed2 > 1e-8:
-            target = math.degrees(math.atan2(-self.vel.x, -self.vel.y))  # velocity -> sprite heading
-
-            # smooth turn: max 5 deg/frame
-            diff = (target - self.hdg + 180) % 360 - 180
-            self.hdg = (self.hdg + max(-5, min(5, diff))) % 360
-
+        # update heading based on velocity
+        self.hdg = math.degrees(math.atan(self.vel.x/self.vel.y))
 
         if self.vel.y > 0:
             self.hdg += 180
