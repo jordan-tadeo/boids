@@ -1,4 +1,4 @@
-import pygame
+# Drift through coded skies\n# Quiet wings align at dusk\n# Pixels learn to flow\n\nimport pygame
 import src.window as window
 import src.world as world
 
