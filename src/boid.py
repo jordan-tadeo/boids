@@ -1,7 +1,7 @@
 import pygame
 import math
 import random
-import utility as util
+import src.utility as util
 
 W, H = (720, 640)
 

@@ -1,6 +1,6 @@
 
 import pygame as pg
-import boid as b
+import src.boid as b
 
 boid_size = b.boid_size
 

@@ -1,6 +1,6 @@
 import pygame
-import window
-import world
+import src.window as window
+import src.world as world
 
 clock = pygame.time.Clock()
 
