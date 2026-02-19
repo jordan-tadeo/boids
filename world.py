@@ -37,12 +37,16 @@ class World:
         return self.infinite_edges(boid_list)
 
     def draw_all_boids(self, boid_list: list) -> None:
-        for boid in boid_list:
+        last_boid = len(boid_list) - 1
+        for i, boid in enumerate(boid_list):
             x = boid.pos.x
             y = boid.pos.y
-            color = boid.color
             surf = boid.surf
             hdg = boid.hdg
+            color = boid.color
+
+            if i == last_boid:
+                color = (0, 200, 255)
 
             # Create surface with alpha channel and fill with transparent color
             surf_alpha = surf.convert_alpha()
