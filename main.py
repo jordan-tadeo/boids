@@ -2,6 +2,8 @@ import pygame
 import src.window as window
 import src.world as world
 
+# This is a comment
+
 clock = pygame.time.Clock()
 
 window1 = window.Window()
